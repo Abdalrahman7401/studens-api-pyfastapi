@@ -1,6 +1,7 @@
 ﻿import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 import mysql.connector
 from pydantic import BaseModel
 import uvicorn
@@ -28,6 +29,10 @@ def get_connection():
         password=password,
         database=database
     )
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/docs")
 
 @app.get("/students")
 async def get_students():
