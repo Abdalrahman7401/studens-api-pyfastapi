@@ -30,7 +30,7 @@ def get_connection():
         database=database
     )
 
-@app.get("/")
+@app.get("/",hidden=True)
 async def root():
     return RedirectResponse(url="/docs")
 
