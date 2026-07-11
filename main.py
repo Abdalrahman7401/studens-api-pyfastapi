@@ -19,10 +19,11 @@ class deletstudent(BaseModel):
 def get_connection():
     return mysql.connector.connect(
         host=os.getenv('host'),
-        user=os.getenv('host'),
-        password=os.getenv('host'),
-        database=os.getenv('host')
+        user=os.getenv('user'),
+        password=os.getenv('password'),
+        database=os.getenv('database')
     )
+    
 
 
 
