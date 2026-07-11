@@ -1,9 +1,12 @@
-import os
-from dotenv import dotenv_values,load_dotenv
+﻿import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 import mysql.connector
 from pydantic import BaseModel
 import uvicorn
+
+# Load local .env if present (harmless in production)
+load_dotenv()
 
 app = FastAPI()
 
@@ -17,15 +20,17 @@ class deletstudent(BaseModel):
     id: int
 
 def get_connection():
+    # Prefer standard uppercase env var names for deployment, fallback to lowercase used locally
+    host = os.getenv('DB_HOST') or os.getenv('host') or '127.0.0.1'
+    user = os.getenv('DB_USER') or os.getenv('user') or 'root'
+    password = os.getenv('DB_PASSWORD') or os.getenv('password') or ''
+    database = os.getenv('DB_NAME') or os.getenv('database') or ''
     return mysql.connector.connect(
-        host=os.getenv('host'),
-        user=os.getenv('user'),
-        password=os.getenv('password'),
-        database=os.getenv('database')
+        host=host,
+        user=user,
+        password=password,
+        database=database
     )
-    
-
-
 
 @app.get("/students")
 async def get_students():
@@ -43,13 +48,13 @@ async def get_students():
 async def post_student(studetsclassdata : columnstudent):
     try:
         conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         insertquirey = "INSERT INTO students (id,name,age,grade) VALUES (%s,%s, %s, %s)"
         studentsdata = (studetsclassdata.id,studetsclassdata.name,studetsclassdata.age,studetsclassdata.grade)
         cursor.execute(insertquirey,studentsdata)
         conn.commit()
         conn.close()
-        return "Student Created"
+        return {"message": "Student Created"}
     except mysql.connector.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {e}")
 
@@ -57,13 +62,13 @@ async def post_student(studetsclassdata : columnstudent):
 async def put_student(studetsclassdata : columnstudent):
     try:
         conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         insertquirey = "UPDATE students SET name=%s, age=%s, grade=%s WHERE id = %s"
         studentsdata = (studetsclassdata.name,studetsclassdata.age,studetsclassdata.grade, studetsclassdata.id)
         cursor.execute(insertquirey,studentsdata)
         conn.commit()
         conn.close()
-        return "Student Updated"
+        return {"message": "Student Updated"}
     except mysql.connector.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {e}")
 
@@ -71,18 +76,15 @@ async def put_student(studetsclassdata : columnstudent):
 async def delete_student(studetsclassdata : deletstudent):
     try:
         conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         insertquirey = "DELETE FROM students WHERE id=%s"
         studentsdata = (studetsclassdata.id,)
         cursor.execute(insertquirey,studentsdata)
         conn.commit()
         conn.close()
-        return "Student Deleted"
+        return {"message": "Student Deleted"}
     except mysql.connector.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {e}")
 
-
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
-
-
