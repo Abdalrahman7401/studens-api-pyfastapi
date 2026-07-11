@@ -1,12 +1,21 @@
 ﻿import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 import mysql.connector
 from pydantic import BaseModel
 import uvicorn
 load_dotenv()
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class columnstudent(BaseModel):
     id : int
@@ -18,16 +27,10 @@ class deletstudent(BaseModel):
     id: int
 
 def get_connection():
-    host = os.getenv('DB_HOST') or os.getenv('host') or '127.0.0.1'
-    user = os.getenv('DB_USER') or os.getenv('user') or 'root'
-    password = os.getenv('DB_PASSWORD') or os.getenv('password') or ''
-    database = os.getenv('DB_NAME') or os.getenv('database') or ''
-    return mysql.connector.connect(
-        host=host,
-        user=user,
-        password=password,
-        database=database
-    )
+    host = os.getenv('host')
+    user = os.getenv('user')
+    password =  os.getenv('password') 
+    database =  os.getenv('database')
 
 @app.get("/",include_in_schema=False)
 async def root():
@@ -88,4 +91,4 @@ async def delete_student(studetsclassdata : deletstudent):
         raise HTTPException(status_code=500, detail=f"Database error: {e}")
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("main:app", port=8080, reload=True)
