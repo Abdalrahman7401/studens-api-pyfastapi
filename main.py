@@ -4,8 +4,6 @@ from fastapi import FastAPI, HTTPException
 import mysql.connector
 from pydantic import BaseModel
 import uvicorn
-
-# Load local .env if present (harmless in production)
 load_dotenv()
 
 app = FastAPI()
@@ -20,7 +18,6 @@ class deletstudent(BaseModel):
     id: int
 
 def get_connection():
-    # Prefer standard uppercase env var names for deployment, fallback to lowercase used locally
     host = os.getenv('DB_HOST') or os.getenv('host') or '127.0.0.1'
     user = os.getenv('DB_USER') or os.getenv('user') or 'root'
     password = os.getenv('DB_PASSWORD') or os.getenv('password') or ''
