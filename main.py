@@ -3,7 +3,8 @@ from dotenv import dotenv_values,load_dotenv
 from fastapi import FastAPI, HTTPException
 import mysql.connector
 from pydantic import BaseModel
-load_dotenv()
+import uvicorn
+
 app = FastAPI()
 
 class columnstudent(BaseModel):
@@ -18,9 +19,9 @@ class deletstudent(BaseModel):
 def get_connection():
     return mysql.connector.connect(
         host=os.getenv('host'),
-        user=os.getenv('user'),
-        password=os.getenv('password'),
-        database=os.getenv('database')
+        user=os.getenv('host'),
+        password=os.getenv('host'),
+        database=os.getenv('host')
     )
 
 
@@ -78,5 +79,9 @@ async def delete_student(studetsclassdata : deletstudent):
         return "Student Deleted"
     except mysql.connector.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {e}")
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
 
 
