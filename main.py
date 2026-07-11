@@ -6,7 +6,6 @@ import mysql.connector
 from pydantic import BaseModel
 import uvicorn
 load_dotenv()
-
 app = FastAPI()
 
 class columnstudent(BaseModel):
