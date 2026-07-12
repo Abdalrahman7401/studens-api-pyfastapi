@@ -60,7 +60,7 @@ Updates an existing student record using the provided ID.
 Request body:
 ```json
 {
-  "id": 3,
+  "id": 2,
   "name": "Karim",
   "age": 21,
   "grade": 9.53
