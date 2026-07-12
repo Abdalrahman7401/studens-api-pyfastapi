@@ -29,8 +29,29 @@ class deletstudent(BaseModel):
 def get_connection():
     host = os.getenv('host')
     user = os.getenv('user')
-    password =  os.getenv('password') 
-    database =  os.getenv('database')
+    password = os.getenv('password')
+    database = os.getenv('database')
+
+# AI
+
+    missing = [name for name, value in {
+        'host': host,
+        'user': user,
+        'password': password,
+        'database': database,
+    }.items() if not value]
+
+    if missing:
+        raise ValueError(f"Missing database environment variables: {', '.join(missing)}")
+
+    return mysql.connector.connect(
+        host=host,
+        user=user,
+        password=password,
+        database=database,
+    )
+########
+
 
 @app.get("/",include_in_schema=False)
 async def root():
@@ -91,4 +112,4 @@ async def delete_student(studetsclassdata : deletstudent):
         raise HTTPException(status_code=500, detail=f"Database error: {e}")
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", port=8080, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=8080, reload=False)
